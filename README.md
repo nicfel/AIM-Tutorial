@@ -3,9 +3,7 @@ author: Nicola F. Müller
 level: Professional
 title: AIM in StarBeast2 v0.0.1 Tutorial
 subtitle: Inferring species trees and gene flow from multiple loci
-beastversion: 2.5.0
-tracerversion: 1.6.0
-figtreeversion: 1.4.2
+beastversion: 2.5.2
 ---
 
 
@@ -83,6 +81,7 @@ First, we have to download the packages StarBeast2 and CoupledMCMC by using the 
 
 
 ### Loading the template
+
 Next, we have to load the BEAUTi template from _File_, select _Template >> AIM_.
 
 
@@ -118,6 +117,10 @@ Since we have all sequences sampled in the present and no calibration, we have t
 
 
 ### Specify the priors (Priors)
+
+The most important priors to specify here are the priors on the effective population size and
+
+
 Now, we need to set the priors of the effective population sizes and the migration rates. Next, we can change the prior to a Log Normal prior with M=0 and S=1. Since we have only a few samples per location, meaning little information about the different effective population sizes, we will need an informative prior.
 Next, we have to set the dimension of the migration rate parameter. The exponential distribution as a prior on the migration rate puts much weight on lower values while not prohibiting larger ones. For migration rates, a prior that prohibits too large values while not greatly distinguishing between very small and very very small values (such as the inverse uniform) is generally a good choice.
 Next, we have to set a prior for the clock rate. Since we only have a narrow time window of less than a year and only 24 sequences, there isn't much information in the data about the clock rate. We have however a good idea about it for Influenza A/H3N2 Hemagglutinin. We can therefore set the prior to be normally distributed around 0.005 substitution per site and year with a variance of 0.0001. (At this point we could also just fix the rate)
@@ -140,6 +143,7 @@ Here we can set the length of the MCMC chain and after how many iterations the p
 </figure>
 
 ### Set up the xml to run two chains
+
 In order to setup the analysis to run with coupled MCMC, we have to open the  `*.xml` and change one line in the xml.
 To do so, go to the line with:
 ```
@@ -154,24 +158,35 @@ To have a run with coupled MCMC, we have to replace that one line with:
 * `deltaTemperature="0.025"` defines the temperature difference between the chain *n* and chain *n-1*.
 * `chains="2"` defines the number of parallel chains that are run. The first chain is the one that explores the posterior just like a normal MCMC chain. All other chains are what's called *heated*. This means that MCMC moves of those chains have a higher probability of being accepted. While these heated chains don't explore the posterior properly, they can be used to propose new states to the one cold chain.   
 
+The output to the screen of a Coupled MCMC run looks slightly different then the one of a standard MCMC run.
+The column called *sample* describes at which iteration of the coupled MCMC we are. The column *swapsColdChain* denotes how many times the one cold chain (the chain that runs just like a regular MCMC chain) has been swapped with another chain. The *swapProbability* denotes how likely it is that a swapping between two chains is accepted. This vaues should be somewhere between *0.2* and *0.6*. A low values indicates that the heated chains are running too hot and are not efficiently exploring the posterior. A too high values indicates that the heated chains are not running hot enough and are thus exploring parameter space that are too similar to the one of the cold chain.
 
+```
+sample    swapsColdCain    swapProbability
+10000    0    0.0 --
+20000    1    0.5 3m15s/Msamples
+30000    1    0.3333333333333333 2m56s/Msamples
+40000    1    0.25 2m34s/Msamples
+50000    1    0.2 2m29s/Msamples
+60000    1    0.16666666666666666 2m24s/Msamples
+70000    1    0.14285714285714285 2m22s/Msamples
+80000    1    0.125 2m20s/Msamples
+90000    1    0.1111111111111111 2m15s/Msamples
+100000    1    0.1 2m12s/Msamples
+110000    1    0.09090909090909091 2m9s/Msamples
+120000    1    0.08333333333333333 2m8s/Msamples
+```
+ 
 
-
-Here we can set the length of the MCMC chain and after how many iterations the parameter and trees a logged. For this dataset, 2 million iterations should be sufficient. In order to have enough samples but not create too large files, we can set the logEvery to 2500, so we have 801 samples overall. Next, we have to save the `*.xml` file under _File >> Save as_.
-
-<figure>
-<a id="fig:example1"></a>
-<img style="width:70%;" src="figures/MCMC.png" alt="">
-<figcaption>Figure 7: save the *.xml.</figcaption>
-</figure>
 
 
 ### Run the Analysis using BEAST2
-Run the `*.xml` using BEAST2 or use finished runs from the *precooked-runs* folder. The analysis should take about 6 to 7 minutes. 
+
+Run the `*.xml` using BEAST2 or use finished runs from the *precooked-runs* folder. The analysis should take about 10 to 20 minutes. 
 
 ### Analyse the log file using Tracer
 
-First, we can open the `*.log` file in tracer to check if the MCMC has converged. The ESS value should be above 200 for almost all values and especially for the posterior estimates. The burnin taken by Tracer is 10%, but for this analysis 1% is enough.
+First, we can open the `aim.log` file in tracer to check if the MCMC has converged. The ESS value should be above 200 for almost all values and especially for the posterior estimates. The burnin taken by Tracer is 10%, but for this analysis 1% is enough. 
 
 <figure>
 	<a id="fig:example1"></a>
@@ -179,60 +194,34 @@ First, we can open the `*.log` file in tracer to check if the MCMC has converged
 	<figcaption>Figure 8: Check if the posterior converged.</figcaption>
 </figure>
 
+### Investigate the species tree and gene flow between species
 
+The analysis script for the analysis of the species tree can be found in the *scripts* folder. The R script *analyseAIMrun.R* can be used to analyse AIM runs and to plot species trees and the gene flow between species. First, we'll need to install a few R packages for the script to run. To do so, open R and then type in the follwing few lines:
 
-Next, we can have a look at the inferred effective population sizes. New York is inferred to have the largest effective population size before Hong Kong and New Zealand. This tells us that two lineages that are in the New Zealand are expected to coalesce quicker than two lineages in Hong Kong or New York.
+```
+install.packages("devtools", type = "source")
+devtools::install_github("thibautjombart/OutbreakTools")
+install.packages("ggplot2", type = "source")
+install.packages("phytools", type = "source")
+install.packages("ape", type = "source")
+install.packages("ggtree", type = "source")
+```
+devtools is needed to install OutbreakTools. 
+OutbreakTools is needed to read in node annotated trees.
+ggplot2 and ggtree are needed to plot trees and phytools and ape are needed to analyse node heights etc.
 
-<figure>
-	<a id="fig:example1"></a>
-	<img style="width:70%;" src="figures/LogNe.png" alt="">
-	<figcaption>Figure 9: Compare the different inferred effective population sizes.</figcaption>
-</figure>
+Next, we can try to run the script.
+Running *analyseAIMrun.R* will take the tree file specified in the line:
+```trees <- "./../precooked_runs/species.trees```
+as intput.
 
-In this example, we have relatively little information about the effective population sizes of each location. This can lead to estimates that are greatly informed by the prior. Additionally, there can be great differences between median and mean estimates. The median estimates are generally more reliable since they are less influence by extreme values. 
-
-<figure>
-	<a id="fig:example1"></a>
-	<img style="width:70%;" src="figures/MeanMedian.png" alt="">
-	<figcaption>Figure 10: Differences between Mean and Meadian estimates.</figcaption>
-</figure>
-
-We can then look at the inferred migration rates. The migration rates have the label b_migration.*, meaning that they are backwards in time migration rates. The highest rates are from New York to Hong Kong. Because they are backwards in time migration rates, this means that lineages from New York are inferred to be likely from Hong Kong if we're going backwards in time. In the inferred phylogenies, we should therefore make the observation that lineages ancestral to samples from New York are inferred to be from the Hong Kong backwards. A very good explanaition on the differences between forward and backwards migration rates can be found in the following blog post by Peter Beerli [http://popgen.sc.fsu.edu/Migrate/Blog/Entries/2013/3/22_forward-backward_migration_rates.html](http://popgen.sc.fsu.edu/Migrate/Blog/Entries/2013/3/22_forward-backward_migration_rates.html)
-
-<figure>
-	<a id="fig:example1"></a>
-	<img style="width:70%;" src="figures/LogMigration.png" alt="">
-	<figcaption>Figure 11: Compare the inferrred migration rates.</figcaption>
-</figure>
-
-### Make the MCC tree using TreeAnnotator
-Next, we want to summarize the trees. This we can do using treeAnnotator. Open the programm and then set the options as below. You have to specify the _Burnin precentage_, the _Node heights_, _Input Tree File_ and the _Output File_ after clicking _Run_ the programm should summarize the trees.
-
-<figure>
-	<a id="fig:example1"></a>
-	<img style="width:50%;" src="figures/TreeAnnotator.png" alt="">
-	<figcaption>Figure 12: Make the maximum clade credibility tree.</figcaption>
-</figure>
-
-### Check the MCC tree using FigTree
-We can now open the MCC tree using FigTree. The output contains several things. Each node has several traits. Among them are those called Hong_Kong, New_York and New_Zealand. The value of those traits is the probability of that node being in that location as inferred using MASCOT. 
-
-
-<figure>
-	<a id="fig:example1"></a>
-	<img style="width:100%;" src="figures/HongKongLabels.png" alt="">
-	<img style="width:100%;" src="figures/NewZealandLabels.png" alt="">
-	<img style="width:100%;" src="figures/NewYorkLabels.png" alt="">
-	<figcaption>Figure 13: Compare the inferred node probabilities.</figcaption>
-</figure>
-
-We can now check if lineages ancestral to samples from New York are actually inferred to be from Hong Kong, or the probability of the root being in any of the locations. It should here be mentioned that the inference of nodes being in a particular location makes some simplifying assumptions, such as that there are no other locations where lineages could have been. To actually visualize the colors of node, you can go to _Appearance >> Colour by_ and select *max*. This will color each node and the branch ancestral to this node by the location that was inferred to be most often the most likely location.
+It will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
 
 ----
 
 # Useful Links
 
-- MASCOT source code: [https://github.com/nicfel/Mascot](https://github.com/nicfel/Mascot)
+- AIM source code: [https://github.com/genomescale/starbeast2](https://github.com/genomescale/starbeast2)
 - [Bayesian Evolutionary Analysis with BEAST 2](http://www.beast2.org/book.html) {% cite BEAST2book2014 --file MASCOT-Tutorial/master-refs.bib %}
 - BEAST 2 website and documentation: [http://www.beast2.org/](http://www.beast2.org/)
 - Join the BEAST user discussion: [http://groups.google.com/group/beast-users](http://groups.google.com/group/beast-users) 
