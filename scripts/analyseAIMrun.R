@@ -22,7 +22,7 @@ setwd(this.dir)
 # define the burn-in percentage
 burn_in = 0.1
 # define the prior probability of an indicator being active (here it's lambda/(nr indicators) )
-prior = 0.695/32
+prior = 0.695/50
 
 
 # Read In Data ---------------------------------
