@@ -236,7 +236,7 @@ ggplot2 and ggtree are needed to plot trees and phytools and ape are needed to a
 
 Next, we can try to run the script.
 Running *analyseAIMrun.R* will take the tree file specified in the line:
-```trees <- "./../precooked_runs/species.trees```
+`trees <- "./../precooked_runs/species.trees`
 as intput.
 
 It will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 

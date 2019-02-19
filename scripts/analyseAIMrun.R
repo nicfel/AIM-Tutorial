@@ -33,7 +33,7 @@ i = 1
 
 # Make the filenames for all possible migration rates
 print("to fix the error: 'Error in start:end : NA/NaN argument' appears, add an 'End;' to the end of the tree file")
-trees <- "./../test/species.trees"
+trees <- "./../precooked_runs/species_out.trees"
 
 # get all the tree topologies in the posterior, if the file isn't ended by END;, this wll cause an error
 est_species_tree_with_nodes <- read.annotated.nexus(trees)
@@ -269,7 +269,7 @@ for (i in seq(1, length(unique_ranked$topology))){
       posterior = length(which(log.data[,all_labels[[2]][[j]]]>0))/length(log.data[,all_labels[[2]][[j]]])
       bayes = posterior*(1-prior)/((1-posterior)*prior)
       if (bayes>10){
-        new.mig_rates <- data.frame(from = strsplit(all_labels[[2]][[j]], "&")[[1]][3], to = strsplit(all_labels[[2]][[j]], "&")[[1]][2], BF=bayes)
+        new.mig_rates <- data.frame(from = strsplit(all_labels[[2]][[j]], "&")[[1]][3], to = strsplit(all_labels[[2]][[j]], "&")[[1]][2], BF=bayes, post=posterior)
         if (nc==1){
           mig_rates = new.mig_rates
           nc <- nc+1
@@ -279,6 +279,7 @@ for (i in seq(1, length(unique_ranked$topology))){
       }
     }
   }
+  print("fdslkjfdjsklfdjkls")
   
   rm(arrows.data)
   
@@ -318,12 +319,13 @@ for (i in seq(1, length(unique_ranked$topology))){
 
   p <- ggtree(plot_tree) + scale_x_reverse() + coord_flip() 
   if (exists("arrows.data")){
-    p <- p + geom_curve(data=arrows.data,curvature = -0.2,  aes(x=x, xend=xend,y = y, yend=yend,size=post), arrow = arrow(angle=10,type="closed",ends="last"), alpha=1)
+    p <- p + geom_curve(data=arrows.data,curvature = -0.3,  aes(x=x, xend=xend,y = y, yend=yend, size=post/2), arrow = arrow(angle=10,type="closed",ends="last"), alpha=1)
   }
-  p <- p + geom_tiplab()
+  p <- p + geom_tiplab()+ 
+    ggtitle(sprintf("posterior support = %.3f", bpp__proc_support[[i]]))
   
   
-  fname1 <- gsub("\\.trees", paste("_", i, ".pdf", sep=""), trees)
+  fname1 <- gsub("\\.trees", paste("_", i, ".pdf", sep=""), trees) 
 
   
   
