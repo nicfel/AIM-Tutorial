@@ -97,12 +97,12 @@ To assign the different individuals to different species, press the _Guess_ butt
 <figure>
 	<a id="fig:example1"></a>
 	<img style="width:70%;" src="figures/TaxonSet.png" alt="">
-	<figcaption>Figure 3: Guess the species of each individual.</figcaption>
+	<figcaption>Figure 3: Guess the species of each sampled individual.</figcaption>
 </figure>
 
 ### Specify the Site Model (Site Model)
 
-Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY model that allows for different relative rates of transversions and transitions. Additionally, we should make sure that the _estimate_ button for the Substitution rates is klicked to allow for rate variation across different loci.  To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. Next, we go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have it's own site model. 
+Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY + $\Gamma_4$ model that allows for different relative rates of transversions and transitions, as well as for rate hetereogeneity across different sites. Additionally, we should make sure that the _estimate_ button for the Substitution rates is klicked to allow for rate variation across different loci.  To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. After, we can go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have the same site model, but each with different parameters.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -113,22 +113,19 @@ Since we Linked all the Site Models of the different loci together when loading 
 
 ### Set the clock model (Clock Model)
 
-Since we have all sequences sampled in the present and no calibration, we have to information to estimate the clock rate.  
+Since we have all sequences sampled in the present and no calibration, we have to information to estimate the clock rate. This however means that the branch lengths of our trees are in the dimension of average number substitutions and in units of time (e.g. in years). 
 
 
 ### Specify the priors (Priors)
 
-The most important priors to specify here are the priors on the effective population size and
+The most important priors to specify here are the priors on the number of active routes of gene flow, the rates of gene flow and the effective population sizes. An active route of gene flow denotes a route of gene flow between two species that is non zero.  The prior on the number of active routes of gene flow is by defaults a Poisson Prior with lambda=0.693. This puts about 50% of the probability mass on 0 active routes of gene flow. This means that in absence of information about gene flow, a prior probability on having gene flow is fairly low.
 
-
-Now, we need to set the priors of the effective population sizes and the migration rates. Next, we can change the prior to a Log Normal prior with M=0 and S=1. Since we have only a few samples per location, meaning little information about the different effective population sizes, we will need an informative prior.
-Next, we have to set the dimension of the migration rate parameter. The exponential distribution as a prior on the migration rate puts much weight on lower values while not prohibiting larger ones. For migration rates, a prior that prohibits too large values while not greatly distinguishing between very small and very very small values (such as the inverse uniform) is generally a good choice.
-Next, we have to set a prior for the clock rate. Since we only have a narrow time window of less than a year and only 24 sequences, there isn't much information in the data about the clock rate. We have however a good idea about it for Influenza A/H3N2 Hemagglutinin. We can therefore set the prior to be normally distributed around 0.005 substitution per site and year with a variance of 0.0001. (At this point we could also just fix the rate)
+To speed up the setup of the `*xml`, we only change the prior on the migration rates. From a hypothetical previous analysis, we know that our tree has a height of about 0.02 substitutions. If we set the mean of the log Normal distribution to 5, this assumes that we expect about 1 in every 10 lineages to have one migration event over the course of the whole species tree. This is not exactly true, but is a good approximation for the order of magnitude of how many migration events we expect under this prior. 
 
 <figure>
 	<a id="fig:example1"></a>
-	<img style="width:70%;" src="figures/Priors.png" alt="">
-	<figcaption>Figure 6: Set up of the prior distributions.</figcaption>
+	<img style="width:70%;" src="figures/MigRatesPrior.png" alt="">
+	<figcaption>Figure 6: Setting up the prior on the migration rates.</figcaption>
 </figure>
 
 
@@ -151,7 +148,7 @@ To do so, go to the line with:
 ```
 To have a run with coupled MCMC, we have to replace that one line with:
 ```
-<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="100000000" storeEvery="1000000" deltaTemperature="0.025" chains="2" resampleEvery="10000">
+<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="100000000" storeEvery="1000000" deltaTemperature="0.05" chains="2" resampleEvery="10000">
 ```
 * `logHeatedChains="true"` also logs the log files of the heated chains if true.
 * `chainLength="100000000"` defines for how many iterations the chains is run
@@ -216,6 +213,7 @@ Running *analyseAIMrun.R* will take the tree file specified in the line:
 as intput.
 
 It will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
+After you run the R script, there will
 
 ----
 

@@ -9,3 +9,7 @@ main.pdf
 .DS_Store
 *.m
 *.txt
+/mcmc/
+/test/
+/test copy/
+/xml/
