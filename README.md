@@ -44,7 +44,6 @@ FigTree ([http://tree.bio.ed.ac.uk/software/figtree](http://tree.bio.ed.ac.uk/so
 
 ### R
 
-R.....
 R is needed to further analyse and plot the output of the AIM analysis
 
 ----
@@ -148,7 +147,7 @@ To do so, go to the line with:
 ```
 To have a run with coupled MCMC, we have to replace that one line with:
 ```
-<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="100000000" storeEvery="1000000" deltaTemperature="0.05" chains="2" resampleEvery="10000">
+<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="100000000" storeEvery="1000000" deltaTemperature="0.1" chains="2" resampleEvery="10000">
 ```
 * `logHeatedChains="true"` also logs the log files of the heated chains if true.
 * `chainLength="100000000"` defines for how many iterations the chains is run
@@ -191,6 +190,34 @@ First, we can open the `aim.log` file in tracer to check if the MCMC has converg
 	<figcaption>Figure 8: Check if the posterior converged.</figcaption>
 </figure>
 
+### Analyse the species tree distribution in DensiTree
+
+First, we can have a look at the distribution of species trees in DensiTree. To do so, open the files `species.trees` in DensiTree.
+
+<figure>
+<a id="fig:example1"></a>
+<img style="width:70%;" src="figures/DensiTree_aim.png" alt="">
+<figcaption>Figure 8: Distribution of species trees inferred under AIM.</figcaption>
+</figure>
+
+We can now compare the distribution of species trees inferred under AIM to the case when we don't have any gene flow. This file can be found in the pre-cooked runs folder and is called `species_nogeneflow.trees`
+
+<figure>
+<a id="fig:example1"></a>
+<img style="width:70%;" src="figures/DensiTree_nogeneflow.png" alt="">
+<figcaption>Figure 8: Distribution of species trees when not accounting for gene flow.</figcaption>
+</figure>
+
+We can see that the inferred distribution of species trees differ between the two methods. The difference lies mainly in where *An. quadriannulatus* attaches. If we have a look at the inferred gene tree for chr3L-10352:
+
+<figure>
+<a id="fig:example1"></a>
+<img style="width:70%;" src="figures/chr3L-10352.png" alt="">
+<figcaption>Figure 8: Inferred gene tree of chr3L-10352.</figcaption>
+</figure>
+
+In AIM the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be different. We will next analyse between which species there was gene flow by using an *R* script.
+
 ### Investigate the species tree and gene flow between species
 
 The analysis script for the analysis of the species tree can be found in the *scripts* folder. The R script *analyseAIMrun.R* can be used to analyse AIM runs and to plot species trees and the gene flow between species. First, we'll need to install a few R packages for the script to run. To do so, open R and then type in the follwing few lines:
@@ -213,7 +240,8 @@ Running *analyseAIMrun.R* will take the tree file specified in the line:
 as intput.
 
 It will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
-After you run the R script, there will
+
+
 
 ----
 
