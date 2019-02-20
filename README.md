@@ -1,7 +1,7 @@
 ---
 author: Nicola F. Müller
 level: Professional
-title: AIM in StarBeast2 v0.0.1 Tutorial
+title: AIM in StarBeast2 v0.15.2 Tutorial
 subtitle: Inferring species trees and gene flow from multiple loci
 beastversion: 2.5.2
 ---
@@ -44,7 +44,7 @@ FigTree ([http://tree.bio.ed.ac.uk/software/figtree](http://tree.bio.ed.ac.uk/so
 
 ### R
 
-R is needed to further analyse and plot the output of the AIM analysis
+We will be using [R](\href{https://www.r-project.org) to analyze and plot the output of the AIM analysis
 
 ----
 
