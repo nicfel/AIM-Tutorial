@@ -143,11 +143,11 @@ Here we can set the length of the MCMC chain and after how many iterations the p
 In order to setup the analysis to run with coupled MCMC, we have to open the  `*.xml` and change one line in the xml.
 To do so, go to the line with:
 ```
-<run id="mcmc" spec="MCMC" chainLength="200000000" numInitializationAttempts="10">
+<run id="mcmc" spec="MCMC" chainLength="10000000" storeEvery="5000">
 ```
 To have a run with coupled MCMC, we have to replace that one line with:
 ```
-<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="100000000" storeEvery="1000000" deltaTemperature="0.1" chains="2" resampleEvery="10000">
+<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="10000000" storeEvery="5000" deltaTemperature="0.1" chains="2" resampleEvery="10000">
 ```
 * `logHeatedChains="true"` also logs the log files of the heated chains if true.
 * `chainLength="100000000"` defines for how many iterations the chains is run
