@@ -243,7 +243,11 @@ It will then read in the node annotated trees and take a burnin as specified in 
 
 The script will produce one figure and one log file for each of the uniquely ranked species tree topologies. The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. 
 
+### Some notes of caution
 
+* Different priors, especially on how much and how strong gene flow is expected to occur, can have a large impact on the species tree that is inferred. The reason is that in a IM model, coalescent events of a gene between two species can either be explained by gene flow or by a speciation event.
+* Variation in the data that is not accounted for by the model can lead to wrong estimates of the species tree or between which species gene flow occurs.
+* Jointly inferring the species tree, gene flow, effective population sizes, gene trees and evolutionary models can take a long time.
 
 ----
 
