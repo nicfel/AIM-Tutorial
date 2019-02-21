@@ -250,7 +250,7 @@ The script will produce one figure and one log file for each of the uniquely ran
 </figure>
 
 
-The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. The log file reports the parameter estimates seperately for each of the different uniquely ranked species tree topologies. 
+The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. The log file reports the parameter estimates seperately for each of the different uniquely ranked species tree topologies. The files are numbered by their relative posterior support, with file nr 1 being the most probable species tree. The support for each individual ranked topolofy is given as the title of each figure. 
 
 ### Some notes of caution
 
