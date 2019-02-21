@@ -225,12 +225,16 @@ devtools is needed to install OutbreakTools.
 OutbreakTools is needed to read in node annotated trees.
 ggplot2 and ggtree are needed to plot trees and phytools and ape are needed to analyse node heights etc.
 
-Next, we can try to run the script.
 Running *analyseAIMrun.R* will take the tree file specified in the line:
-`trees <- "./../precooked_runs/species.trees`
-as intput.
+`trees <- "./../precooked_runs/species_long.trees`
+as intput. If you want to use a different `species.trees` files, this line has to be changed.
 
-It will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
+Next, we can try to run the script.
+
+If the error `Error in start:end : NA/NaN argument` appears, the last line of the  `*.trees` file we were using was probably not `End;`. The function that reads in the trees into `R` however requires this to be the case. The easiest way to avoid this error is therefore to just add `End;` to the `*.trees` file in a TextEditor. Otherwise, running `logCombiner` on the `*.trees` file will resolve the error as well.
+
+Runnign the scripy will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
+
 
 The script will produce one figure and one log file for each of the uniquely ranked species tree topologies. The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. 
 
