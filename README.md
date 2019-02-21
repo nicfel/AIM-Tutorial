@@ -101,7 +101,7 @@ To assign the different individuals to different species, press the _Guess_ butt
 
 ### Specify the Site Model (Site Model)
 
-Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY + $\Gamma_4$ model that allows for different relative rates of transversions and transitions, as well as for rate hetereogeneity across different sites. Additionally, we should make sure that the _estimate_ button for the substitution rates is clicked to allow for rate variation across different loci. To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. After, we can go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have the same site model, but each with different parameters.
+Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY + &Gamma<sub>4</sub> model that allows for different relative rates of transversions and transitions, as well as for rate hetereogeneity across different sites. Additionally, we should make sure that the _estimate_ button for the substitution rates is clicked to allow for rate variation across different loci. To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. After, we can go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have the same site model, but each with different parameters.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -133,17 +133,24 @@ In order to speed up the setup, most of the priors are already set to what they 
 
 In order to setup the analysis to run with coupled MCMC, we have to open the  `*.xml` and change one line in the xml.
 To do so, go to the line with:
+
 ```
 <run id="mcmc" spec="MCMC" chainLength="10000000" storeEvery="5000">
 ```
+
 To have a run with coupled MCMC, we have to replace the above line with:
+
 ```
 <run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="10000000" storeEvery="5000" deltaTemperature="0.1" chains="2" resampleEvery="10000">
 ```
-* `logHeatedChains="true"` logs the log files of the heated chains if true.
-* `chainLength="100000000"` defines for how many iterations the chains is run
-* `deltaTemperature="0.025"` defines the temperature difference between the chain *n* and chain *n-1*.
-* `chains="2"` defines the number of parallel chains that are run. The first chain is the one that explores the posterior just like a normal MCMC chain. All other chains are what's called *heated*. This means that MCMC moves of those chains have a higher probability of being accepted. While these heated chains don't explore the posterior properly, they can be used to propose new states to the one cold chain.   
+
+*  `logHeatedChains="true"` logs the log files of the heated chains if true.
+
+*  `chainLength="100000000"` defines for how many iterations the chains is run
+
+*  `deltaTemperature="0.1"` defines the temperature difference between the chain *n* and chain *n-1*.
+
+*  `chains="2"` defines the number of parallel chains that are run. The first chain is the one that explores the posterior just like a normal MCMC chain. All other chains are what's called *heated*. This means that MCMC moves of those chains have a higher probability of being accepted. While these heated chains don't explore the posterior properly, they can be used to propose new states to the one cold chain.   
 
 The output to the screen of a Coupled MCMC run looks slightly different then the one of a standard MCMC run.
 The column called *sample* describes at which iteration of the coupled MCMC we are. The column *swapsColdChain* denotes how many times the one cold chain (the chain that runs just like a regular MCMC chain) has been swapped with another chain. The *swapProbability* denotes how likely it is that a swapping between two chains is accepted. This vaues should be somewhere between *0.2* and *0.6*. A low values indicates that the heated chains are running too hot and are not efficiently exploring the posterior. A too high values indicates that the heated chains are not running hot enough and are thus exploring parameter space that are too similar to the one of the cold chain.
