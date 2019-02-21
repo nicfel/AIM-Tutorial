@@ -199,7 +199,15 @@ We can now compare the distribution of species trees inferred under AIM to the c
 <figcaption>Figure 8: Distribution of species trees when not accounting for gene flow.</figcaption>
 </figure>
 
-We can see that the inferred distribution of species trees differ between the two methods. The difference lies mainly in where *An. quadriannulatus* attaches. If we have a look at the inferred gene tree for chr3L-10352:
+Next, we can check which which genes most likely drive these differences. In order to do so, we can compare inferred relative rates of evolution of every loci between runs with and runs without gene flow. To do so, we can load the two files `aim.log` and `aim_nogeneflow.log` in tracer. When we compare the relative rates of mutation between most genes, they look fairly similar between with and without gene flow for most loci. Loci nr 10352 however has a very different inferred mutation rate, indicating that there is something different going on in that loci depending on wether we allow for gene flow or not.
+
+<figure>
+<a id="fig:example1"></a>
+<img style="width:70%;" src="figures/locimutrate.png" alt="">
+<figcaption>Figure 8: Differences in inferred relative rates of evolution for loci nr 10352.</figcaption>
+</figure>
+
+Next, we can open the inferred tree of loci 10352 when accounting for gene flow in DensiTree
 
 <figure>
 <a id="fig:example1"></a>
@@ -207,7 +215,7 @@ We can see that the inferred distribution of species trees differ between the tw
 <figcaption>Figure 8: Inferred gene tree of chr3L-10352.</figcaption>
 </figure>
 
-In AIM the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be different. We will next analyse between which species there was gene flow by using an *R* script.
+In AIM the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be slightly different by essentially pushing the attachment of *An. quadriannulatus* closer to *An. gambia*. We will next analyse between which species there was gene flow by using an *R* script.
 
 ### Investigate the species tree and gene flow between species
 
@@ -231,12 +239,9 @@ as intput. If you want to use a different `species.trees` files, this line has t
 
 Next, we can try to run the script.
 
-If the error `Error in start:end : NA/NaN argument` appears, the last line of the  `*.trees` file we were using was probably not `End;`. The function that reads in the trees into `R` however requires this to be the case. The easiest way to avoid this error is therefore to just add `End;` to the `*.trees` file in a TextEditor. Otherwise, running `logCombiner` on the `*.trees` file will resolve the error as well.
+If the error `Error in start:end : NA/NaN argument` appears, the last line of the  `*.trees` file we were using was probably not `End;`. The function that reads in the trees into `R` however requires this to be the case. The easiest way to avoid this error is therefore to just add `End;` to the `*.trees` file in a TextEditor. Otherwise, running `logCombiner` on the `*.trees` file will resolve the error as well. Runnign the script will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
 
-Runnign the scripy will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
-
-
-The script will produce one figure and one log file for each of the uniquely ranked species tree topologies. The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. 
+The script will produce one figure and one log file for each of the uniquely ranked species tree topologies. Thes figures show the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20 of each of these uniquely ranked species tree topology. 
 
 ### Some notes of caution
 
