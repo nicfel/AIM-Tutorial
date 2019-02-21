@@ -101,7 +101,7 @@ To assign the different individuals to different species, press the _Guess_ butt
 
 ### Specify the Site Model (Site Model)
 
-Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY + &Gamma<sub>4</sub> model that allows for different relative rates of transversions and transitions, as well as for rate hetereogeneity across different sites. Additionally, we should make sure that the _estimate_ button for the substitution rates is clicked to allow for rate variation across different loci. To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. After, we can go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have the same site model, but each with different parameters.
+Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY + &Gamma; <sub>4</sub> model that allows for different relative rates of transversions and transitions, as well as for rate hetereogeneity across different sites. Additionally, we should make sure that the _estimate_ button for the substitution rates is clicked to allow for rate variation across different loci. To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. After, we can go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have the same site model, but each with different parameters.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -260,6 +260,19 @@ The script will produce one figure and one log file for each of the uniquely ran
 </figure>
 
 The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. The log file reports the parameter estimates seperately for each of the different uniquely ranked species tree topologies. The files are numbered by their relative posterior support, with file nr 1 being the most probable species tree. The support for each individual ranked topolofy is given as the title of each figure. 
+
+
+The figure of the most probable inferred tree should look something like the figure below.
+
+<figure>
+<a id="fig:example1"></a>
+<img style="width:70%;" src="figures/species_long_1.png" alt="">
+<figcaption>Figure 11: Most probable ranked tree topology.</figcaption>
+</figure>
+
+We infer gene flow to be probable from *An. gambia* to *An. quadriannulatus*.
+
+
 
 ### Some notes of caution
 
