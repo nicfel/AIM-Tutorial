@@ -96,7 +96,7 @@ To assign the different individuals to different species, press the _Guess_ butt
 <figure>
 	<a id="fig:example1"></a>
 	<img style="width:70%;" src="figures/TaxonSet.png" alt="">
-	<figcaption>Figure 3: Guess the species of each sampled individual.</figcaption>
+	<figcaption>Figure 2: Guess the species of each sampled individual.</figcaption>
 </figure>
 
 ### Specify the Site Model (Site Model)
@@ -106,7 +106,7 @@ Since we Linked all the Site Models of the different loci together when loading 
 <figure>
 	<a id="fig:example1"></a>
 	<img style="width:70%;" src="figures/SiteModel.png" alt="">
-	<figcaption>Figure 4: Set the site model.</figcaption>
+	<figcaption>Figure 3: Set the site model.</figcaption>
 </figure>
 
 
@@ -124,7 +124,7 @@ In order to speed up the setup, most of the priors are already set to what they 
 <figure>
 	<a id="fig:example1"></a>
 	<img style="width:70%;" src="figures/MigRatesPrior.png" alt="">
-	<figcaption>Figure 6: Setting up the prior on the migration rates.</figcaption>
+	<figcaption>Figure 4: Setting up the prior on the migration rates.</figcaption>
 </figure>
 
  Next, we can save the `*.xml` file under _File >> Save as_.
@@ -178,7 +178,7 @@ First, we can open the `aim.log` file in tracer to check if the MCMC has converg
 <figure>
 	<a id="fig:example1"></a>
 	<img style="width:70%;" src="figures/LogPosterior.png" alt="">
-	<figcaption>Figure 8: Check if the posterior converged.</figcaption>
+	<figcaption>Figure 5: Check if the posterior converged.</figcaption>
 </figure>
 
 ### Analyse the species tree distribution in DensiTree
@@ -188,7 +188,7 @@ First, we can have a look at the distribution of species trees in DensiTree. To 
 <figure>
 <a id="fig:example1"></a>
 <img style="width:70%;" src="figures/DensiTree_aim.png" alt="">
-<figcaption>Figure 8: Distribution of species trees inferred under AIM.</figcaption>
+<figcaption>Figure 6: Distribution of species trees inferred under AIM.</figcaption>
 </figure>
 
 We can now compare the distribution of species trees inferred under AIM to the case when we don't have any gene flow. This file can be found in the pre-cooked runs folder and is called `species_nogeneflow.trees`
@@ -196,7 +196,7 @@ We can now compare the distribution of species trees inferred under AIM to the c
 <figure>
 <a id="fig:example1"></a>
 <img style="width:70%;" src="figures/DensiTree_nogeneflow.png" alt="">
-<figcaption>Figure 8: Distribution of species trees when not accounting for gene flow.</figcaption>
+<figcaption>Figure 7: Distribution of species trees when not accounting for gene flow.</figcaption>
 </figure>
 
 Next, we can check which which genes most likely drive these differences. In order to do so, we can compare inferred relative rates of evolution of every loci between runs with and runs without gene flow. To do so, we can load the two files `aim.log` and `aim_nogeneflow.log` in tracer. When we compare the relative rates of mutation between most genes, they look fairly similar between with and without gene flow for most loci. Loci nr 10352 however has a very different inferred mutation rate, indicating that there is something different going on in that loci depending on wether we allow for gene flow or not.
@@ -212,7 +212,7 @@ Next, we can open the inferred tree of loci 10352 when accounting for gene flow 
 <figure>
 <a id="fig:example1"></a>
 <img style="width:70%;" src="figures/chr3L-10352.png" alt="">
-<figcaption>Figure 8: Inferred gene tree of chr3L-10352.</figcaption>
+<figcaption>Figure 9: Inferred gene tree of chr3L-10352.</figcaption>
 </figure>
 
 In AIM the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be slightly different by essentially pushing the attachment of *An. quadriannulatus* closer to *An. gambia*. We will next analyse between which species there was gene flow by using an *R* script.
@@ -241,7 +241,16 @@ Next, we can try to run the script.
 
 If the error `Error in start:end : NA/NaN argument` appears, the last line of the  `*.trees` file we were using was probably not `End;`. The function that reads in the trees into `R` however requires this to be the case. The easiest way to avoid this error is therefore to just add `End;` to the `*.trees` file in a TextEditor. Otherwise, running `logCombiner` on the `*.trees` file will resolve the error as well. Runnign the script will then read in the node annotated trees and take a burnin as specified in the line ```burn_in = 0.1```. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM since each ranked topologies as different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
 
-The script will produce one figure and one log file for each of the uniquely ranked species tree topologies. Thes figures show the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20 of each of these uniquely ranked species tree topology. 
+The script will produce one figure and one log file for each of the uniquely ranked species tree topologies. Uniquely ranked tree topologies distinguishes between trees with the same topology, but different order of nodes.
+
+<figure>
+<a id="fig:example1"></a>
+<img style="width:70%;" src="figures/rankedTree.png" alt="">
+<figcaption>Figure 10: Tree with the same topology but different node order.</figcaption>
+</figure>
+
+
+The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. The log file reports the parameter estimates seperately for each of the different uniquely ranked species tree topologies. 
 
 ### Some notes of caution
 
