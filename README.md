@@ -170,6 +170,8 @@ sample    swapsColdCain    swapProbability
 110000    1    0.09090909090909091 2m9s/Msamples
 120000    1    0.08333333333333333 2m8s/Msamples
 ```
+
+The webpage [https://darrenjw.wordpress.com/2013/09/29/parallel-tempering-and-metropolis-coupled-mcmc/](https://darrenjw.wordpress.com/2013/09/29/parallel-tempering-and-metropolis-coupled-mcmc/), gives a good introduction on how coupled MCMC works
  
 
 
