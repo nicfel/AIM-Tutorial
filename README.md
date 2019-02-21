@@ -222,7 +222,7 @@ Next, we can open the inferred tree of loci 10352 when accounting for gene flow 
 <figcaption>Figure 9: Inferred gene tree of chr3L-10352.</figcaption>
 </figure>
 
-In AIM the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be slightly different by essentially pushing the attachment of *An. quadriannulatus* closer to *An. gambia*. We will next analyse between which species there was gene flow by using an *R* script.
+In AIM, the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be slightly different by essentially pushing the attachment of *An. quadriannulatus* closer to *An. gambia*. We will next analyse between which species there was gene flow by using an *R* script.
 
 ### Investigate the species tree and gene flow between species
 
@@ -257,12 +257,11 @@ The script will produce one figure and one log file for each of the uniquely ran
 <figcaption>Figure 10: Tree with the same topology but different node order.</figcaption>
 </figure>
 
-
 The figure shows the species tree as well as between which species gene flow is supported with a Bayes Factor with more than 20. The log file reports the parameter estimates seperately for each of the different uniquely ranked species tree topologies. The files are numbered by their relative posterior support, with file nr 1 being the most probable species tree. The support for each individual ranked topolofy is given as the title of each figure. 
 
 ### Some notes of caution
 
-* Different priors, especially on how much and how strong gene flow is expected to occur, can have a large impact on the species tree that is inferred. The reason is that in a IM model, coalescent events of a gene between two species can either be explained by gene flow or by a speciation event.
+* Different priors, especially on how much and how strong gene flow is expected to occur, can have a large impact on the species tree that is inferred. The reason is that in a IM model, coalescent events on a gene between two species can either be explained by gene flow or by a speciation event.
 * Variation in the data that is not accounted for by the model can lead to wrong estimates of the species tree or between which species gene flow occurs.
 * Jointly inferring the species tree, gene flow, effective population sizes, gene trees and evolutionary models can take a long time.
 
