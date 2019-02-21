@@ -270,7 +270,7 @@ The figure of the most probable inferred tree should look something like the fig
 <figcaption>Figure 11: Most probable ranked tree topology.</figcaption>
 </figure>
 
-We infer gene flow to be probable from *An. gambia* to *An. quadriannulatus*.
+Meaning that we infer gene flow to be probable from *An. gambia* to *An. quadriannulatus*.
 
 
 
