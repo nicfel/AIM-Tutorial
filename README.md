@@ -86,12 +86,12 @@ Next, we have to load the BEAUTi template from _File_, select _Template >> AIM_.
 
 ### Loading the different loci
 
-The sequences for the different loci can be found in the _data_ folder name can be either drag and dropped into BEAUti. To speed up the setup later, we can press _Link Site Models_ and _Link Clock Models_
+The sequences for the different loci can be found in the _data_ folder name can be either drag and dropped into BEAUti or imported by _Import Alignment_.  It will ask you what type the data is. If we say nucleotide, it will ask us for each loci individually. Since all loci are nucleotide data, we can choose _all are nucleotide_. To speed up the setup later, we can press _Link Site Models_ and _Link Clock Models_
 
 
 ### Get species corresponding to the different individuals (Taxon sets)
-
-To assign the different individuals to different species, press the _Guess_ button. Next, use everything before first and press the _OK_ button.
+Next, we have to go to the Taxon sets tab.
+To assign the different individuals to different species, press the _Guess_ button. Use everything before first and press the _OK_ button.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -101,7 +101,7 @@ To assign the different individuals to different species, press the _Guess_ butt
 
 ### Specify the Site Model (Site Model)
 
-Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY + $\Gamma_4$ model that allows for different relative rates of transversions and transitions, as well as for rate hetereogeneity across different sites. Additionally, we should make sure that the _estimate_ button for the Substitution rates is klicked to allow for rate variation across different loci.  To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. After, we can go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have the same site model, but each with different parameters.
+Since we Linked all the Site Models of the different loci together when loading the sequence data, we only have to set up the site models once. We will be using an HKY + $\Gamma_4$ model that allows for different relative rates of transversions and transitions, as well as for rate hetereogeneity across different sites. Additionally, we should make sure that the _estimate_ button for the substitution rates is clicked to allow for rate variation across different loci. To reduce the number of parameters we have to estimate, we can set Frequencies to Empirical. After, we can go back to the _Partitions_ field and press _Unlink Site Models_. Now each loci will have the same site model, but each with different parameters.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -117,9 +117,9 @@ Since we have all sequences sampled in the present and no calibration, we have t
 
 ### Specify the priors (Priors)
 
-The most important priors to specify here are the priors on the number of active routes of gene flow, the rates of gene flow and the effective population sizes. An active route of gene flow denotes a route of gene flow between two species that is non zero.  The prior on the number of active routes of gene flow is by defaults a Poisson Prior with lambda=0.693. This puts about 50% of the probability mass on 0 active routes of gene flow. This means that in absence of information about gene flow, a prior probability on having gene flow is fairly low.
+The most important priors to specify here are the priors on the number of active routes of gene flow, the rates of gene flow and the effective population sizes. An active route of gene flow denotes a route of gene flow between two species that is non zero. The prior on the number of active routes (migIndicatorSum.species) of gene flow is by defaults a Poisson Prior with lambda=0.693. This puts about 50% of the probability mass on 0 active routes of gene flow. This means that in absence of information about gene flow, a prior probability on having gene flow is fairly low.
 
-To speed up the setup of the `*xml`, we only change the prior on the migration rates. From a hypothetical previous analysis, we know that our tree has a height of about 0.02 substitutions. If we set the mean of the log Normal distribution to 5, this assumes that we expect about 1 in every 10 lineages to have one migration event over the course of the whole species tree. This is not exactly true, but is a good approximation for the order of magnitude of how many migration events we expect under this prior. 
+In order to speed up the setup, most of the priors are already set to what they should be, expect for the prior on the migration rates. From a hypothetical previous analysis, we know that our tree has a height of about 0.02 substitutions. If we had a migration rate of 1/0.02=50, this would mean that one lineage of a gene from present to the root is expected to migrate on average 1 time. The prior on the migration rates is set in the _migRates.Species_ block. If we set the mean of the log Normal distribution to 2.5, this assumes that we expect about 1 in every 20 lineages to have one migration event over the course of the whole species tree. This is not exactly true, but is an ok approximation for the order of magnitude of how many migration events we expect under this prior. 
 
 <figure>
 	<a id="fig:example1"></a>
@@ -127,16 +127,7 @@ To speed up the setup of the `*xml`, we only change the prior on the migration r
 	<figcaption>Figure 6: Setting up the prior on the migration rates.</figcaption>
 </figure>
 
-
-### Specify the MCMC chain length (MCMC)
-
-Here we can set the length of the MCMC chain and after how many iterations the parameter and trees a logged. For this dataset, 2 million iterations should be sufficient. In order to have enough samples but not create too large files, we can set the logEvery to 2500, so we have 801 samples overall. Next, we have to save the `*.xml` file under _File >> Save as_.
-
-<figure>
-	<a id="fig:example1"></a>
-	<img style="width:70%;" src="figures/MCMC.png" alt="">
-	<figcaption>Figure 7: save the *.xml.</figcaption>
-</figure>
+ Next, we can save the `*.xml` file under _File >> Save as_.
 
 ### Set up the xml to run two chains
 
@@ -145,11 +136,11 @@ To do so, go to the line with:
 ```
 <run id="mcmc" spec="MCMC" chainLength="10000000" storeEvery="5000">
 ```
-To have a run with coupled MCMC, we have to replace that one line with:
+To have a run with coupled MCMC, we have to replace the above line with:
 ```
 <run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="10000000" storeEvery="5000" deltaTemperature="0.1" chains="2" resampleEvery="10000">
 ```
-* `logHeatedChains="true"` also logs the log files of the heated chains if true.
+* `logHeatedChains="true"` logs the log files of the heated chains if true.
 * `chainLength="100000000"` defines for how many iterations the chains is run
 * `deltaTemperature="0.025"` defines the temperature difference between the chain *n* and chain *n-1*.
 * `chains="2"` defines the number of parallel chains that are run. The first chain is the one that explores the posterior just like a normal MCMC chain. All other chains are what's called *heated*. This means that MCMC moves of those chains have a higher probability of being accepted. While these heated chains don't explore the posterior properly, they can be used to propose new states to the one cold chain.   
