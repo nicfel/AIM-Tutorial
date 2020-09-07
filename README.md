@@ -13,11 +13,11 @@ beastversion: 2.5.2
 
 ----
 
-# Programs used in this Exercise 
+# Programs used in this Exercise
 
 ### BEAST2 - Bayesian Evolutionary Analysis Sampling Trees 2
 
-BEAST2 ([http://www.beast2.org](http://www.beast2.org)) is a free software package for Bayesian evolutionary analysis of molecular sequences using MCMC and strictly oriented toward inference using rooted, time-measured phylogenetic trees. This tutorial is written for BEAST v{{ page.beastversion }} {% cite BEAST2book2014 --file AIM-Tutorial/master-refs %}. 
+BEAST2 ([http://www.beast2.org](http://www.beast2.org)) is a free software package for Bayesian evolutionary analysis of molecular sequences using MCMC and strictly oriented toward inference using rooted, time-measured phylogenetic trees. This tutorial is written for BEAST v{{ page.beastversion }} {% cite BEAST2book2014 --file AIM-Tutorial/master-refs %}.
 
 
 ### BEAUti2 - Bayesian Evolutionary Analysis Utility
@@ -52,7 +52,7 @@ We will be using [R](\href{https://www.r-project.org) to analyze and plot the ou
 
 {% cite Mueller348391 --file AIM-Tutorial/master-refs.bib %}
 
-In this tutorial, we wil infer the species history of 5 different anopheles mosquitos species by using AIM, which is short for *Approximate Isolation with Migration*. AIM is part of the StarBeast2 package. This model can be used when we want to jointly infer the species histories for multiple loci and gene flow between extant and ancestral species.
+In this tutorial, we wil infer the species history of 6 different anopheles mosquitos species by using AIM, which is short for *Approximate Isolation with Migration*. AIM is part of the StarBeast2 package. This model can be used when we want to jointly infer the species histories for multiple loci and gene flow between extant and ancestral species.
 
 The aim is to:
 
@@ -62,14 +62,14 @@ The aim is to:
 
 ## About the data
 
-The data was previously used to infer the species history of the anopheles gambie complex in {% cite fontaine2015extensive --file AIM-Tutorial/master-refs.bib %}. It is comprised of 27 loci, each of a length of about 1000 bp, from the left arm of the 3rd chromosome. 
+The data was previously used to infer the species history of the anopheles gambie complex in {% cite fontaine2015extensive --file AIM-Tutorial/master-refs.bib %}. It is comprised of 20 loci, each of a length of about 1000 bp, from the X chromosome of mosquitos from the anopholes Gambia species complex.
 
 
 
 ## Setting up an analysis in BEAUti
 
 ### Download StarBeast2 and CoupledMCMC
-First, we have to download the packages StarBeast2 and CoupledMCMC by using the BEAUTi package manager. Go to _File >> Manage Packages_ and download the package and CoupledMCMC StarBeast2. 
+First, we have to download the packages StarBeast2 and CoupledMCMC by using the BEAUTi package manager. Go to _File >> Manage Packages_ and download the package and CoupledMCMC StarBeast2.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -112,14 +112,17 @@ Since we Linked all the site models of the different loci together when loading 
 
 ### Set the clock model (Clock Model)
 
-Since we have all sequences sampled at the present and no calibration, we do not have any information of time to estimate the clock rate. This means that none of our estimates will be in units of time (e.g. in years), but instead will be in number of substitutions. 
+Since we have all sequences sampled at the present and no calibration, we do not have any information of time to estimate the clock rate. This means that none of our estimates will be in units of time (e.g. in years), but instead will be in number of substitutions.
 
 
 ### Specify the priors (Priors)
 
 The most important priors to specify here are the priors on the number of active routes of gene flow, the rates of gene flow and the effective population sizes. An active route of gene flow denotes a route of gene flow between two species that is non zero. The prior on the number of active routes (migIndicatorSum.species) of gene flow is by defaults a Poisson Prior with lambda=0.693. This puts about 50% of the probability mass on 0 active routes of gene flow. This means that in absence of information about gene flow, a prior probability on having gene flow is fairly low.
 
-In order to speed up the setup, most of the priors are already set to what they should be, expect for the prior on the migration rates. From a hypothetical previous analysis, we know that our tree has a height of about 0.02 substitutions. If we had a migration rate of 1/0.02=50, this would mean that one lineage of a gene from present to the root is expected to migrate on average 1 time. The prior on the migration rates is set in the _migRates.Species_ block. If we set the mean of the log Normal distribution to 2.5, this assumes that we expect about 1 in every 20 lineages to have one migration event over the course of the whole species tree. This is not exactly true, but is an ok approximation for the order of magnitude of how many migration events we expect under this prior. 
+In order to speed up the setup, most of the priors are already set to what they should be, expect for the prior on the migration rates. From a hypothetical previous analysis, we know that our tree has a height of about 0.02 substitutions per site.
+If we had a migration rate of 1/0.02=50, this would mean that one lineage of a gene from present to the root is expected to migrate on average 1 time. The prior on the migration rates is set in the _migRates.Species_ block.
+If we set the mean of the log Normal distribution to 25, this assumes that we expect about 1 in every 2 lineages to have one migration event over the course of the whole species tree.
+This is not exactly true, but is an ok approximation for the order of magnitude of how many migration events we expect under this prior.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -127,62 +130,28 @@ In order to speed up the setup, most of the priors are already set to what they 
 	<figcaption>Figure 4: Setting up the prior on the migration rates.</figcaption>
 </figure>
 
- Next, we can save the `*.xml` file under _File >> Save as_.
+By default, AIM assumes that the migration rate between two co-existing species can not be larger than the inverse time that they co-existed.
+This can lead to issue when starting a run, where beast doesn't find a proper state to initialize.
+To avoid that in this example, we have to set the initial migration rates a bit lower, from 1.0 to 0.1.
+To do so, you can click `Initial`, next to the migration Rates prior and set the value to 0.1.
 
-### Set up the xml to run two chains
+<figure>
+	<a id="fig:example1"></a>
+	<img style="width:70%;" src="figures/MigRatesInitial.png" alt="">
+	<figcaption>Figure 4: Setting the initial value of the migration rates to 0.1.</figcaption>
+</figure>
 
-In order to setup the analysis to run with coupled MCMC, we have to open the  `*.xml` and change one line in the xml.
-To do so, go to the line with:
-
-```
-<run id="mcmc" spec="MCMC" chainLength="10000000" storeEvery="5000">
-```
-
-To have a run with coupled MCMC, we have to replace the above line with:
-
-```
-<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" logHeatedChains="true" chainLength="10000000" storeEvery="5000" deltaTemperature="0.1" chains="2" resampleEvery="10000">
-```
-
-*  `logHeatedChains="true"` logs the log files of the heated chains if true.
-
-*  `chainLength="100000000"` defines for how many iterations the chains is run
-
-*  `deltaTemperature="0.1"` defines the temperature difference between the chain *n* and chain *n-1*.
-
-*  `chains="2"` defines the number of parallel chains that are run. The first chain is the one that explores the posterior just like a normal MCMC chain. All other chains are what's called *heated*. This means that MCMC moves of those chains have a higher probability of being accepted. While these heated chains don't explore the posterior properly, they can be used to propose new states to the one cold chain.   
-
-The output to the screen of a Coupled MCMC run looks slightly different then the one of a standard MCMC run.
-The column called *sample* describes at which iteration of the coupled MCMC we are. The column *swapsColdChain* denotes how many times the one cold chain (the chain that runs just like a regular MCMC chain) has been swapped with another chain. The *swapProbability* denotes how likely it is that a swapping between two chains is accepted. This vaue should be somewhere between *0.2* and *0.6*. A low values indicates that the heated chains are running too hot and are not efficiently exploring the posterior. A too high values indicates that the heated chains are not running hot enough and are thus exploring parameter space that are too similar to the one of the cold chain.
-
-```
-sample    swapsColdCain    swapProbability
-10000    0    0.0 --
-20000    1    0.5 3m15s/Msamples
-30000    1    0.3333333333333333 2m56s/Msamples
-40000    1    0.25 2m34s/Msamples
-50000    1    0.2 2m29s/Msamples
-60000    1    0.16666666666666666 2m24s/Msamples
-70000    1    0.14285714285714285 2m22s/Msamples
-80000    1    0.125 2m20s/Msamples
-90000    1    0.1111111111111111 2m15s/Msamples
-100000    1    0.1 2m12s/Msamples
-110000    1    0.09090909090909091 2m9s/Msamples
-120000    1    0.08333333333333333 2m8s/Msamples
-```
-
-The webpage [https://darrenjw.wordpress.com/2013/09/29/parallel-tempering-and-metropolis-coupled-mcmc/](https://darrenjw.wordpress.com/2013/09/29/parallel-tempering-and-metropolis-coupled-mcmc/), gives a good introduction on how coupled MCMC works.
- 
-
-
+We can next go to the MCMC tab to specify how long we want the analysis to run for.
+In this example, we will increase the Chain Length from 10000000 to 20000000.
+Last, we can save the `*.xml` file under _File >> Save as_.
 
 ### Run the Analysis using BEAST2
 
-Run the `*.xml` using BEAST2 or use finished runs from the *precooked-runs* folder. The analysis should take about 10 to 20 minutes. 
+Run the `*.xml` using BEAST2 or use finished runs from the *precooked-runs* folder. The analysis should take about 20 minutes.
 
 ### Analyse the log file using Tracer
 
-First, we can open the `aim.log` file in tracer to check if the MCMC has converged. The ESS value should be above 200 for almost all values and especially for the posterior estimates. The burnin taken by Tracer is 10%, but for this analysis 1% is enough. 
+First, we can open the `aim.log` file in tracer to check if the MCMC has converged. The ESS value should be above 200 for almost all values and especially for the posterior estimates. The burnin taken by Tracer is 10%, but for this analysis 1% is enough.
 
 <figure>
 	<a id="fig:example1"></a>
@@ -203,9 +172,9 @@ First, we can have a look at the distribution of species trees in DensiTree. To 
 We can now compare the distribution of species trees inferred under AIM to the case when we don't have any gene flow. This file can be found in the pre-cooked runs folder and is called `species_nogeneflow.trees`
 
 <figure>
-<a id="fig:example1"></a>
-<img style="width:70%;" src="figures/DensiTree_nogeneflow.png" alt="">
-<figcaption>Figure 7: Distribution of species trees when not accounting for gene flow.</figcaption>
+	<a id="fig:example1"></a>
+	<img style="width:70%;" src="figures/DensiTree_nogeneflow.png" alt="">
+	<figcaption>Figure 7: Distribution of species trees when not accounting for gene flow.</figcaption>
 </figure>
 
 Next, we can check which which genes most likely drive these differences. In order to do so, we can compare inferred relative rates of evolution for every loci between runs with and runs without gene flow. To do so, we can load the two files `aim.log` and `aim_nogeneflow.log` in tracer. When we compare the relative rates of mutation between most loci, they look fairly similar between with and without gene flow. Locus nr 10352 however has a very different inferred mutation rate, indicating that there is something different going on in that loci depending on wether we allow for gene flow or not.
@@ -224,55 +193,32 @@ Next, we can open the inferred tree of locus 10352 when accounting for gene flow
 <figcaption>Figure 9: Inferred gene tree of chr3L-10352.</figcaption>
 </figure>
 
-In AIM, the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be slightly different by essentially pushing the attachment of *An. quadriannulatus* closer to *An. gambia*. We will next analyse between which species there was gene flow by using an *R* script.
+In AIM, the attachement of *An. quadriannulatus* is explained by gene flow. When not accounting for gene flow, this causes the topology of the species tree to be slightly different by essentially pushing the attachment of *An. quadriannulatus* closer to *An. gambia*. We will next analyze between which species there was gene flow by using an *R* script.
 
-### Investigate the species tree and gene flow between species
+### Summarize the species tree using the AIM species tree annotator
 
-The analysis script for the analysis of the species tree can be found in the *scripts* folder. The R script *analyseAIMrun.R* can be used to analyse AIM runs and to plot species trees and the gene flow between species. First, we'll need to install a few R packages for the script to run. To do so, open R and then type in the follwing few lines:
-
-```
-install.packages("devtools", type = "source")
-devtools::install_github("thibautjombart/OutbreakTools")
-install.packages("ggplot2", type = "source")
-install.packages("phytools", type = "source")
-install.packages("ape", type = "source")
-install.packages("ggtree", type = "source")
-```
-
-`devtools` is needed to install `OutbreakTools`. 
-`OutbreakTools` is needed to read in node annotated trees.
-`ggplot2` and `ggtree` are needed to plot trees and `phytools` and `ape` are needed to analyse node heights etc.
-
-Running *analyseAIMrun.R* will take the tree file specified in the line:
-
-```
-trees <- "./../precooked_runs/species_long.trees
-```
-
-as intput. If you want to use a different `species.trees` files, this line has to be changed. Next, we can try to run the script. If the error `Error in start:end : NA/NaN argument` appears, the last line of the  `*.trees` file we were using was probably not `End;`. The function that reads in the trees into `R` however requires this to be the case. The easiest way to avoid this error is therefore to just add `End;` to the `*.trees` file in a TextEditor. Otherwise, running `logCombiner` on the `*.trees` file will resolve the error as well. Running the script will then read in the node annotated trees and take a burnin as specified in the line `burn_in = 0.1`. It will then count how many different unique ranked tree topologies there are. This means that the script distinguished between trees that have the same topology but where the ordering of internal nodes is different. This has to be done in AIM, since each ranked topologies has a different set of co-existing species. This means that the meaning of parameters is different for each of these different topologies. 
-
-The script will produce one figure and one log file for each of the uniquely ranked species tree topologies. Uniquely ranked tree topologies distinguishes between trees with the same topology, but different order of nodes.
+To summarize the species tree, open BEAUTi, go to  _File >> Launch Apps_, select `AIM species tree annotator` and click `launch`.
+This will open the AIM species tree annotator.
+The AIM species tree annotator summarizes the species trees file.
+To do so, it looks for all trees that have the same ranked topology.
+For each unique ranked topology, it will then compute its posterior support, as well as the rates of migration and effective populations sizes for each unique ranked topology.
+First, we have to choose the input file by clicking `Choose File` next to `Isolation with migration species tree file`.
+Then, we have to choose the output file by clocking `Choose File` next to `Output file`.
+In order to ensure that the output is saved to the same directory, click on a file and then name the file Anopheles.trees.
 
 <figure>
 <a id="fig:example1"></a>
-<img style="width:70%;" src="figures/rankedTree.png" alt="">
-<figcaption>Figure 10: Tree with the same topology but different node order.</figcaption>
+<img style="width:70%;" src="figures/Annotator.png" alt="">
+<figcaption>Figure 9: Setup of the AIM species tree annotator.</figcaption>
 </figure>
 
-The figure shows the species tree as well as between which species gene flow is supported. Only if gene flow is supported with Bayes Factor with more than 20, it is plotted. 
-The log file reports the parameter estimates seperately for each of the different uniquely ranked species tree topologies. The files are numbered by their relative posterior support, with file nr 1 being the most probable species tree. The support for each individual ranked topolofy is given as the title of each figure. 
+After, we can click `Analyze`.
 
-
-The figure of the most probable inferred tree should look something like the figure below.
-
-<figure>
-<a id="fig:example1"></a>
-<img style="width:70%;" src="figures/species_long_1.png" alt="">
-<figcaption>Figure 11: Most probable ranked tree topology.</figcaption>
-</figure>
-
-Meaning that we infer gene flow to be probable from *An. gambia* to *An. quadriannulatus*.
-
+This will create a few different files.
+`Anopheles.trees` is a tree file that contains all the different unique ranked topologies encountered during the MCMC.
+The file `Anopheles.trees.ranked.log` contains a single log file, where the only thing logged is the at which point during the MCMC, the chains was equal to which unique ranked topologies.
+Then there are a few additional log files.
+`Anopheles.trees.STATE_0_occurances_1724.log` contains all the effective population sizes, migration rates between coexsiting species and speciation times for the unique ranked topology number 0 (STATE_0) in the file `Anopheles.trees`.
 
 
 ### Some notes of caution
@@ -288,11 +234,10 @@ Meaning that we infer gene flow to be probable from *An. gambia* to *An. quadria
 - AIM source code: [https://github.com/genomescale/starbeast2](https://github.com/genomescale/starbeast2)
 - [Bayesian Evolutionary Analysis with BEAST 2](http://www.beast2.org/book.html) {% cite BEAST2book2014 --file AIM-Tutorial/master-refs.bib %}
 - BEAST 2 website and documentation: [http://www.beast2.org/](http://www.beast2.org/)
-- Join the BEAST user discussion: [http://groups.google.com/group/beast-users](http://groups.google.com/group/beast-users) 
+- Join the BEAST user discussion: [http://groups.google.com/group/beast-users](http://groups.google.com/group/beast-users)
 
 ----
 
 # Relevant References
 
 {% bibliography --cited --file AIM-Tutorial/master-refs %}
-
