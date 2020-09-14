@@ -48,7 +48,7 @@ We will be using [R](\href{https://www.r-project.org) to analyze and plot the ou
 
 ----
 
-# Practical: Joint inference of the species history and gene flow of 5 anopheles mosquitos by using AIM and coupled MCMC
+# Practical: Inferring species trees and gene flow from multiple loci of 5 anopheles mosquitos using AIM
 
 {% cite Mueller348391 --file AIM-Tutorial/master-refs.bib %}
 
