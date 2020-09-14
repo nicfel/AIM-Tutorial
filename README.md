@@ -241,7 +241,7 @@ We can next plot the species tree using:
 The `T` (true) at the end will lead to arrows being plotted as forward in time arrows (i.e. migration was from species to species).
 If it's `F` (false), then it will plot arrows for backwards in time gene flow.
 The value 0.1 denotes the posterior threshold to plot an arrow (i.e. the posterior support for gene flow has to be above that value to be plotted).
-The second number is for a Bayes values threshold for Bayes values calculated using the third number as a prior probability for gene flow.
+The second number is for a Bayes Factor values threshold for Bayes Factor values calculated using the third number as a prior probability for gene flow.
 
 At the end, things should look approximately like this:
 
