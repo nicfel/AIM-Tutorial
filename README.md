@@ -184,7 +184,7 @@ To do so, open the files `species.trees` in DensiTree.
 <figure>
 <a id="fig:example1"></a>
 <img style="width:70%;" src="figures/DensiTree_aim.png" alt="">
-<figcaption>Figure 6: Distribution of species trees inferred under AIM.</figcaption>
+<figcaption>Figure 7: Distribution of species trees inferred under AIM.</figcaption>
 </figure>
 
 What we can see from the looking at the species tree file in densitree, is that the model is pretty certain in resolving most clades.
@@ -206,7 +206,7 @@ In order to ensure that the output is saved to the same directory, click on a fi
 <figure>
 <a id="fig:example1"></a>
 <img style="width:70%;" src="figures/Annotator.png" alt="">
-<figcaption>Figure 9: Setup of the AIM species tree annotator.</figcaption>
+<figcaption>Figure 8: Setup of the AIM species tree annotator.</figcaption>
 </figure>
 
 After, we can click `Analyze`.
@@ -224,7 +224,7 @@ If we open the file `Anopheles.trees` in icytree.org (or figtree), we can see to
 <figure>
 <a id="fig:example1"></a>
 <img style="width:70%;" src="figures/RankedTreeState.png" alt="">
-<figcaption>Figure 10: Best supported ranked tree.</figcaption>
+<figcaption>Figure 9: Best supported ranked tree.</figcaption>
 </figure>
 
 We can next open the file `Anopheles.trees.STATE_0_occurances_1724.log` in tracer to see the effective population sizes of extant and ancestral species, the (backwards in time) migration rates between co-existing species and the speciation times.
@@ -243,7 +243,13 @@ If it's `F` (false), then it will plot arrows for backwards in time gene flow.
 The value 0.1 denotes the posterior threshold to plot an arrow (i.e. the posterior support for gene flow has to be above that value to be plotted).
 The second number is for a Bayes values threshold for Bayes values calculated using the third number as a prior probability for gene flow.
 
+At the end, things should look approximately like this:
 
+<figure>
+<a id="fig:example1"></a>
+<img style="width:70%;" src="figures/SpeciesTreeGeneFlow.png" alt="">
+<figcaption>Figure 10: Best supported ranked tree with gene flow and node height bars.</figcaption>
+</figure>
 
 
 
