@@ -1,12 +1,17 @@
-plotSpeciesTree = function (plot_tree, posterior.threshold, BF.threshold, prior, forward.arrows){
+plotSpeciesTree = function (tree_filename, tree_name, posterior.threshold, BF.threshold, prior, forward.arrows){
   require(ggplot2)
   require(phytools)
   require(ape)
   require(coda)
+  
+  species_trees <- read.nexus(file=tree_filename,force.multi=T) # get all the tree topologies in the posterior
+  ind = which(labels(species_trees)==tree_name)
+  print(ind)
+  plot_tree <- ladderize(species_trees[[ind]], right=F)
+  
 
   # read in the node heights, Ne's and migration rates
-  tree_name = names(species_trees)[[i]]
-  filename = paste(trees, ".", tree_name, ".log", sep="") # build the filename for the log file corresponding to the current unique ranked tree
+  filename = paste(tree_filename, ".", tree_name, ".log", sep="") # build the filename for the log file corresponding to the current unique ranked tree
   t = read.table(filename, header=T, sep="\t",quote = "\"") # read in the log files with Ne's etc.
   names(t) = scan(filename, nlines = 1, what = character()) # get the proper headers (read.table converts : into .)
   # adapt the names to be alphabetically ordered
@@ -19,16 +24,16 @@ plotSpeciesTree = function (plot_tree, posterior.threshold, BF.threshold, prior,
     }
   }
   
-  nr_tips = length(species_trees[[i]]$tip.label) # get the number of tips
+  nr_tips = length(plot_tree$tip.label) # get the number of tips
   node_names <- vector(,2*nr_tips-1) # keeps track of the node names as in the log file
   
   # get the node names for the tips as they are in the log file
   for (j in seq(1,nr_tips)){
-    node_names[j] <- species_trees[[i]]$tip.label[j]
+    node_names[j] <- plot_tree$tip.label[j]
   }
   
   # get the node names for internal nodes as they are in the log file
-  subs = subtrees(species_trees[[i]])
+  subs = subtrees(plot_tree)
   for (j in seq(1,length(subs))){
     node_names[nr_tips+j] <- paste(sort(subs[[j]]$tip.label), collapse=":")
   }
@@ -36,7 +41,7 @@ plotSpeciesTree = function (plot_tree, posterior.threshold, BF.threshold, prior,
   # Build the tree as a series of segments to plot in ggtree
   rm(tree.rectangular.data)
   
-  edges=species_trees[[i]]$edge # get all edges of the tree
+  edges=plot_tree$edge # get all edges of the tree
   for (j in seq(1,length(edges[,1]))){
     node1name = old_nodenames[which(new_nodenames==node_names[edges[j,1]])]
     node2name = old_nodenames[which(new_nodenames==node_names[edges[j,2]])]
@@ -78,7 +83,7 @@ plotSpeciesTree = function (plot_tree, posterior.threshold, BF.threshold, prior,
       y.height.start2 = mean(t[,paste("height", old_nodenames[which(new_nodenames==node_names[edges[edge2,1]])], sep="_")]) # get starting height of edge 2
       y.height.end2 = mean(t[,paste("height", old_nodenames[which(new_nodenames==node_names[edges[edge2,2]])], sep="_")]) # get ending height of edge 2
       
-      y.height = max(y.height.end1,y.height.end2) + (min(y.height.start1,y.height.start2)-max(y.height.end1,y.height.end2))/2
+      y.height = max(y.height.end1,y.height.end2) + (min(y.height.start1,y.height.start2)-max(y.height.end1,y.height.end2))/2 * runif(1, 0.99999, 1.00001)
       
       posterior = length(which(t[,names(t)[[j]]]>0))/length(t[,names(t)[[j]]])
       bayes = posterior*(1-prior)/((1-posterior)*prior)
@@ -91,7 +96,7 @@ plotSpeciesTree = function (plot_tree, posterior.threshold, BF.threshold, prior,
       }
     }
   }
-  
+
   subset.mig_rates = mig_rates[which(mig_rates$post>posterior.threshold),] 
   subset.mig_rates = subset.mig_rates[which(subset.mig_rates$BF>BF.threshold),] 
   
@@ -101,11 +106,11 @@ plotSpeciesTree = function (plot_tree, posterior.threshold, BF.threshold, prior,
   
   if (length(subset.mig_rates)>0){
     if (forward.arrows){
-      p <- p +geom_curve(data=subset.mig_rates, curvature = 0, # adds the arrows to the plot
+      p <- p + geom_curve(data=subset.mig_rates, curvature = -0.2, # adds the arrows to the plot
                          aes(x=xend, xend=x, y = y, yend=yend, size=post),
                          arrow = arrow(angle=20,type="closed",ends="last"))
     }else{
-      p <- p +geom_curve(data=subset.mig_rates, curvature = 0, # adds the arrows to the plot
+      p <- p + geom_curve(data=subset.mig_rates, curvature = 10, # adds the arrows to the plot
                          aes(x=x, xend=xend, y = y, yend=yend, size=post),
                          arrow = arrow(angle=20,type="closed",ends="last"))
     }
@@ -113,12 +118,15 @@ plotSpeciesTree = function (plot_tree, posterior.threshold, BF.threshold, prior,
   
   # get the tip labels
   tip_labels = vector(,nr_tips)
+  break_points = vector(,nr_tips)
   for (i in seq(1,nr_tips)){
     tip_labels[[i]] = node_names[[i]]
-    
+    break_points[[i]] = node.height(plot_tree)[i]
   }
   
-  p <- p + scale_x_continuous(breaks=seq(1,nr_tips), labels=tip_labels) + xlab("")
+  print(tip_labels)
+  print(break_points)
+  p <- p + scale_x_continuous(breaks=break_points, labels=tip_labels) + xlab("")
   
   return (p)
 }
